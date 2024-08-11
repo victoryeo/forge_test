@@ -1,7 +1,7 @@
 import { createPublicClient, createWalletClient, http } from "viem";
 import { localhost, mainnet, anvil } from "viem/chains";
 import { MetaMaskSDK, MetaMaskSDKOptions } from "@metamask/sdk"
-import { createTestClient } from 'viem'
+import { createTestClient, Address } from 'viem'
 import { foundry } from 'viem/chains'
 import { getContract, defineChain } from 'viem'
 import { usdeAbi } from "./abi";
@@ -94,7 +94,7 @@ const testme = async() => {
       await contractme.write.setMinter(["0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266"])
 
       const { request } = await clientPublic.simulateContract({
-        account: "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
+        account: address[0] as Address,
         address: '0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0',
         abi: usdeAbi,
         functionName: 'mint',
