@@ -4,6 +4,7 @@ import { MetaMaskSDK, MetaMaskSDKOptions } from "@metamask/sdk"
 import { createTestClient } from 'viem'
 import { foundry } from 'viem/chains'
 import { getContract } from 'viem'
+import { usdeAbi } from "./abi";
 
 const options: MetaMaskSDKOptions = {
   shouldShimWeb3: false,
@@ -68,7 +69,7 @@ const testme = async() => {
     console.log(mine)
 
     const result = await contractme.read.totalSupply()
-
+    console.log(result)
 }
 
 testme()
