@@ -2,65 +2,17 @@
 
 **Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
 
-Foundry consists of:
 
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+forge create --rpc-url localhost:8545 --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 ./contracts/USDe.sol:USDe --constructor-args 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb9226
 
-## Documentation
+forge install OpenZeppelin/openzeppelin-contracts --no-commit
 
-https://book.getfoundry.sh/
+forge install OpenZeppelin/openzeppelin-contracts-upgradeable --no-commit
 
-## Usage
+forge install openzeppelin-contracts-05=OpenZeppelin/openzeppelin-contracts@v2.5.0 openzeppelin-contracts-06=OpenZeppelin/openzeppelin-contracts@v3.4.0 openzeppelin-contracts-08=OpenZeppelin/openzeppelin-contracts@v4.8.3 --no-commit
 
-### Build
+forge remove OpenZeppelin/openzeppelin-contracts  -f
 
-```shell
-$ forge build
-```
+cast call 0x5FbDB2315678afecb367f032d93F642f64180aa3 "mint(address, uint256)()" 0x70997970C51812dc3A010C7d01b50e0d17dc79C8 10 --rpc-url localhost:8545
 
-### Test
-
-```shell
-$ forge test
-```
-
-### Format
-
-```shell
-$ forge fmt
-```
-
-### Gas Snapshots
-
-```shell
-$ forge snapshot
-```
-
-### Anvil
-
-```shell
-$ anvil
-```
-
-### Deploy
-
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
-
-### Cast
-
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+cast call 0x5FbDB2315678afecb367f032d93F642f64180aa3 "totalSupply()(uint256)" --rpc-url localhost:854
