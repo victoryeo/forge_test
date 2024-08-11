@@ -1,10 +1,11 @@
 import { createPublicClient, createWalletClient, http } from "viem";
-import { localhost, mainnet } from "viem/chains";
+import { localhost, mainnet, anvil } from "viem/chains";
 import { MetaMaskSDK, MetaMaskSDKOptions } from "@metamask/sdk"
 import { createTestClient } from 'viem'
 import { foundry } from 'viem/chains'
-import { getContract } from 'viem'
+import { getContract, defineChain } from 'viem'
 import { usdeAbi } from "./abi";
+import { privateKeyToAccount } from "viem/accounts";
 
 const options: MetaMaskSDKOptions = {
   shouldShimWeb3: false,
@@ -39,9 +40,27 @@ if (ethereum != undefined)
   ethereum.request({ method: "eth_requestAccounts", params: [] })
 
 const client1 = createPublicClient({chain: localhost, transport: http()})
+
+const customChain = defineChain({
+  id: 31337,
+  name: 'localhost',
+  nativeCurrency: {
+    decimals: 18,
+    name: 'Ether',
+    symbol: 'ETH',
+  },
+  rpcUrls: {
+    default: {
+      http: ['http://localhost'],
+    },
+  },
+})
+
+const accountMe = privateKeyToAccount('0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80')
 const client2 = createWalletClient({
-  chain: localhost,
-  transport: http()
+  account: accountMe,
+  chain: customChain,
+  transport: http('http://localhost:8545')
 })
 const client3 = createTestClient({
   chain: foundry,
@@ -70,6 +89,9 @@ const testme = async() => {
 
     const result = await contractme.read.totalSupply()
     console.log(result)
+
+    const hash = await contractme.write.mint(["0x70997970C51812dc3A010C7d01b50e0d17dc79C8", 1])
+    console.log(hash)
 }
 
 testme()
