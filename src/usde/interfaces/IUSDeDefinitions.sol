@@ -10,5 +10,5 @@ interface IUSDeDefinitions {
   /// @notice It's not possible to renounce the ownership
   error CantRenounceOwnership();
   /// @notice Only the minter role can perform an action
-  error OnlyMinter();
+  error OnlyMinter(address, address);
 }

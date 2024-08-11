@@ -8,7 +8,7 @@ import "@openzeppelin/contracts/access/Ownable2Step.sol";
 import "./interfaces/IUSDeDefinitions.sol";
 
 /**
- * @title USDe
+ * @title USDem
  * @notice Stable Coin Contract
  * @dev Only a single approved minter can mint new tokens
  */
@@ -26,7 +26,7 @@ contract USDe is Ownable2Step, ERC20Burnable, ERC20Permit, IUSDeDefinitions {
   }
 
   function mint(address to, uint256 amount) external {
-    if (msg.sender != minter) revert OnlyMinter();
+    if (msg.sender != minter) revert OnlyMinter(msg.sender, minter);
     _mint(to, amount);
   }
 
