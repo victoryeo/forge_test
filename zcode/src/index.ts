@@ -36,8 +36,9 @@ const options: MetaMaskSDKOptions = {
 
 const mmsdk = new MetaMaskSDK(options);
 const ethereum = mmsdk.getProvider()
-if (ethereum != undefined)
+if (ethereum != undefined) {
   ethereum.request({ method: "eth_requestAccounts", params: [] })
+}
 
 const clientPublic = createPublicClient({chain: localhost, transport: http()})
 
@@ -68,8 +69,9 @@ const clientTest = createTestClient({
   transport: http(), 
 })
 
+const CONT_ADDR = '0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0'
 const contractme = getContract({
-  address: '0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0',
+  address: CONT_ADDR,
   abi: usdeAbi,
   // 1a. Insert a single client
   // 1b. Or public and/or wallet clients
@@ -95,7 +97,7 @@ const testme = async() => {
 
       const { request } = await clientPublic.simulateContract({
         account: address[0] as Address,
-        address: '0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0',
+        address: CONT_ADDR,
         abi: usdeAbi,
         functionName: 'mint',
         args: ["0x70997970C51812dc3A010C7d01b50e0d17dc79C8", 1],
