@@ -37,7 +37,8 @@ const options: MetaMaskSDKOptions = {
 const mmsdk = new MetaMaskSDK(options);
 const ethereum = mmsdk.getProvider()
 if (ethereum != undefined) {
-  ethereum.request({ method: "eth_requestAccounts", params: [] })
+  const res1 = ethereum.request({ method: "eth_requestAccounts", params: [] })
+  console.log("res1", res1)
 }
 
 const clientPublic = createPublicClient({chain: localhost, transport: http()})
@@ -80,7 +81,7 @@ const contractme = getContract({
 
 const testme = async() => { 
     const blockNumber = await clientPublic.getBlockNumber() 
-    console.log(blockNumber)
+    console.log('blockNumber', blockNumber)
 
     //let address: string[] = []
     const address: string[] = await clientWallet.getAddresses()
