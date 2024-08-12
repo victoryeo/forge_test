@@ -7,6 +7,7 @@ import { getContract, defineChain } from 'viem'
 import { usdeAbi } from "./usdeAbi";
 import { stakingVaultAbi, bytecode as stakingVaultBytecode } from "./stakingVault";
 import { privateKeyToAccount } from "viem/accounts";
+import { type GetBlockNumberErrorType } from 'viem'
 
 const options: MetaMaskSDKOptions = {
   shouldShimWeb3: false,
@@ -72,6 +73,7 @@ const clientTest = createTestClient({
 })
 
 const USDE_CONT_ADDR = '0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0'
+const STAKER_ADDR = "0x70997970C51812dc3A010C7d01b50e0d17dc79C8"
 const contractUsde = getContract({
   address: USDE_CONT_ADDR,
   abi: usdeAbi,
@@ -95,14 +97,14 @@ const testme = async() => {
     console.log(result)
 
     try {
-      await contractUsde.write.setMinter(["0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266"])
+      await contractUsde.write.setMinter([address[0]])
 
       const { request } = await clientPublic.simulateContract({
         account: address[0] as Address,
         address: USDE_CONT_ADDR,
         abi: usdeAbi,
         functionName: 'mint',
-        args: ["0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266", 1],
+        args: [address[0], 3],
       })
       const hash = await clientWallet.writeContract(request)
 
@@ -113,20 +115,20 @@ const testme = async() => {
       const result = await contractUsde.read.totalSupply()
       console.log("total", result)
 
-      const result2 = await contractUsde.read.balanceOf(["0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266"])
+      const result2 = await contractUsde.read.balanceOf([address[0]])
       console.log("balance", result2)
       
       // set allowances of the owner spender
       const hash2 = await contractUsde.write.approve([
-        "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266", 2])
+        address[0], 2])
       console.log(hash2)
 
       // transfer from the account that is minted with erc20 token 
       // to another account
       const hash3 = await contractUsde.write.transferFrom([
-        "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266", 
-        "0x70997970C51812dc3A010C7d01b50e0d17dc79C8", 1])
-      console.log(hash3)
+        address[0], 
+        STAKER_ADDR, 1])
+      console.log("hash", hash3)
 
       const logs = await clientPublic.getContractEvents({ 
         abi: usdeAbi 
@@ -137,8 +139,8 @@ const testme = async() => {
         abi: usdeAbi,
         eventName: 'Transfer',
         args: {
-          from: '0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266',
-          to: '0x70997970C51812dc3A010C7d01b50e0d17dc79C8'
+          from: address[0],
+          to: STAKER_ADDR
         },
         fromBlock: BigInt(0),
         toBlock: BigInt(163350)
@@ -151,16 +153,36 @@ const testme = async() => {
         args: [USDE_CONT_ADDR, address[0], address[0]],
         bytecode: stakingVaultBytecode,
       })
-      console.log(hash4)
+      console.log("hash", hash4)
       
       const transactionReceipt = await clientPublic.waitForTransactionReceipt( 
         { hash: hash4 }
       )
       // print contract address
-      console.log(transactionReceipt.contractAddress)
+      console.log("address", transactionReceipt.contractAddress)
+      const stakingVaultAddress = transactionReceipt.contractAddress
+
+      const contractStakingVault = getContract({
+        address: stakingVaultAddress as Address,
+        abi: stakingVaultAbi,
+        // 1a. Insert a single client
+        // 1b. Or public and/or wallet clients
+        client: { public: clientPublic, wallet: clientWallet }
+      })
+      // set minter
+      await contractUsde.write.setMinter([address[0]])
+
+      // set allowances of the staker spender
+      const hash5 = await contractUsde.write.approve([stakingVaultAddress, 2])
+      console.log("hash", hash5)
+      const hash6 = await contractStakingVault.write.deposit([
+        "1", address[0]])
+      console.log(hash6)
     } catch (error: any) {
       const revertData = error;
-      console.log("Custom Error:", revertData);
+      const e = error as GetBlockNumberErrorType
+      console.log(e)
+      //console.log("Custom Error:", revertData);
     }
 }
 
