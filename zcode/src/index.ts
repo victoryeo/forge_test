@@ -104,7 +104,11 @@ const testme = async() => {
         args: ["0x70997970C51812dc3A010C7d01b50e0d17dc79C8", 1],
       })
       const hash = await clientWallet.writeContract(request)
+
+      //alternative implementation
+      //const hash = await contractme.write.mint(["0x70997970C51812dc3A010C7d01b50e0d17dc79C8", 1])
       console.log(hash)
+      
       const result = await contractme.read.totalSupply()
       console.log(result)
       
