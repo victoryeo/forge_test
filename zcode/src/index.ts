@@ -72,7 +72,7 @@ const clientTest = createTestClient({
 })
 
 const USDE_CONT_ADDR = '0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0'
-const contractme = getContract({
+const contractUsde = getContract({
   address: USDE_CONT_ADDR,
   abi: usdeAbi,
   // 1a. Insert a single client
@@ -91,11 +91,11 @@ const testme = async() => {
     const mine = await clientTest.mine({ blocks: 1 })
     console.log(mine)
 
-    const result = await contractme.read.totalSupply()
+    const result = await contractUsde.read.totalSupply()
     console.log(result)
 
     try {
-      await contractme.write.setMinter(["0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266"])
+      await contractUsde.write.setMinter(["0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266"])
 
       const { request } = await clientPublic.simulateContract({
         account: address[0] as Address,
@@ -110,20 +110,20 @@ const testme = async() => {
       //const hash = await contractme.write.mint(["0x70997970C51812dc3A010C7d01b50e0d17dc79C8", 1])
       console.log(hash)
 
-      const result = await contractme.read.totalSupply()
+      const result = await contractUsde.read.totalSupply()
       console.log("total", result)
 
-      const result2 = await contractme.read.balanceOf(["0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266"])
+      const result2 = await contractUsde.read.balanceOf(["0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266"])
       console.log("balance", result2)
       
       // set allowances of the owner spender
-      const hash2 = await contractme.write.approve([
+      const hash2 = await contractUsde.write.approve([
         "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266", 2])
       console.log(hash2)
 
       // transfer from the account that is minted with erc20 token 
       // to another account
-      const hash3 = await contractme.write.transferFrom([
+      const hash3 = await contractUsde.write.transferFrom([
         "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266", 
         "0x70997970C51812dc3A010C7d01b50e0d17dc79C8", 1])
       console.log(hash3)
