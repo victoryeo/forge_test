@@ -101,17 +101,36 @@ const testme = async() => {
         address: CONT_ADDR,
         abi: usdeAbi,
         functionName: 'mint',
-        args: ["0x70997970C51812dc3A010C7d01b50e0d17dc79C8", 1],
+        args: ["0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266", 1],
       })
       const hash = await clientWallet.writeContract(request)
 
       //alternative implementation
       //const hash = await contractme.write.mint(["0x70997970C51812dc3A010C7d01b50e0d17dc79C8", 1])
       console.log(hash)
-      
+
       const result = await contractme.read.totalSupply()
-      console.log(result)
+      console.log("total", result)
+
+      const result2 = await contractme.read.balanceOf(["0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266"])
+      console.log("balance", result2)
       
+      // set allowances of the owner spender
+      const hash2 = await contractme.write.approve([
+        "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266", 2])
+      console.log(hash2)
+
+      // transfer from the account that is minted with erc20 token 
+      // to another account
+      const hash3 = await contractme.write.transferFrom([
+        "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266", 
+        "0x70997970C51812dc3A010C7d01b50e0d17dc79C8", 1])
+      console.log(hash3)
+
+      const logs = await clientPublic.getContractEvents({ 
+        abi: usdeAbi 
+      })
+      console.log(logs)
     } catch (error: any) {
       const revertData = error;
       console.log("Custom Error:", revertData);
