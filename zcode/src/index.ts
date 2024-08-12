@@ -131,6 +131,18 @@ const testme = async() => {
         abi: usdeAbi 
       })
       console.log(logs)
+      const logs2 = await clientPublic.getContractEvents({ 
+        address: CONT_ADDR,
+        abi: usdeAbi,
+        eventName: 'Transfer',
+        args: {
+          from: '0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266',
+          to: '0x70997970C51812dc3A010C7d01b50e0d17dc79C8'
+        },
+        fromBlock: BigInt(0),
+        toBlock: BigInt(163350)
+      })
+      console.log(logs2)
     } catch (error: any) {
       const revertData = error;
       console.log("Custom Error:", revertData);
