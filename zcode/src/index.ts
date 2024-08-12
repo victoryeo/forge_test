@@ -4,7 +4,8 @@ import { MetaMaskSDK, MetaMaskSDKOptions } from "@metamask/sdk"
 import { createTestClient, Address } from 'viem'
 import { foundry } from 'viem/chains'
 import { getContract, defineChain } from 'viem'
-import { usdeAbi } from "./abi";
+import { usdeAbi } from "./usdeAbi";
+import { stakingVaultAbi, bytecode as stakingVaultBytecode } from "./stakingVault";
 import { privateKeyToAccount } from "viem/accounts";
 
 const options: MetaMaskSDKOptions = {
@@ -70,9 +71,9 @@ const clientTest = createTestClient({
   transport: http(), 
 })
 
-const CONT_ADDR = '0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0'
+const USDE_CONT_ADDR = '0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0'
 const contractme = getContract({
-  address: CONT_ADDR,
+  address: USDE_CONT_ADDR,
   abi: usdeAbi,
   // 1a. Insert a single client
   // 1b. Or public and/or wallet clients
@@ -98,7 +99,7 @@ const testme = async() => {
 
       const { request } = await clientPublic.simulateContract({
         account: address[0] as Address,
-        address: CONT_ADDR,
+        address: USDE_CONT_ADDR,
         abi: usdeAbi,
         functionName: 'mint',
         args: ["0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266", 1],
@@ -132,7 +133,7 @@ const testme = async() => {
       })
       console.log(logs)
       const logs2 = await clientPublic.getContractEvents({ 
-        address: CONT_ADDR,
+        address: USDE_CONT_ADDR,
         abi: usdeAbi,
         eventName: 'Transfer',
         args: {
@@ -143,6 +144,20 @@ const testme = async() => {
         toBlock: BigInt(163350)
       })
       console.log(logs2)
+
+      const hash4 = await clientWallet.deployContract({
+        abi: stakingVaultAbi,
+        account: address[0] as Address,
+        args: [USDE_CONT_ADDR, address[0], address[0]],
+        bytecode: stakingVaultBytecode,
+      })
+      console.log(hash4)
+      
+      const transactionReceipt = await clientPublic.waitForTransactionReceipt( 
+        { hash: hash4 }
+      )
+      // print contract address
+      console.log(transactionReceipt.contractAddress)
     } catch (error: any) {
       const revertData = error;
       console.log("Custom Error:", revertData);
