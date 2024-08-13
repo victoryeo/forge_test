@@ -122,7 +122,7 @@ const testme = async() => {
       
       // set allowances of the owner spender
       const hash2 = await contractUsde.write.approve([
-        address[0], 2])
+        address[0], 1])
       console.log('hash', hash2)
 
       // transfer from the account that is minted with erc20 token 
@@ -175,13 +175,15 @@ const testme = async() => {
       await contractUsde.write.setMinter([address[0]])
 
       // set allowances of the staker spender
-      const hash5 = await contractUsde.write.approve([stakingVaultAddress, 2])
+      const hash5 = await contractUsde.write.approve([stakingVaultAddress, 1])
       console.log("hash", hash5)
-      const hash6 = await contractStakingVault.write.deposit([
+      const hash6 = await contractStakingVault.write.transferInRewards(["1"])
+      console.log('hash', hash6)
+      /*const hash6 = await contractStakingVault.write.deposit([
         "1", address[0]])
-      console.log(hash6)
+      console.log(hash6)*/
     } catch (error: any) {
-      const revertData = error;
+      //const revertData = error;
       const e = error as GetBlockNumberErrorType
       console.log(e)
       //console.log("Custom Error:", revertData);
