@@ -9,7 +9,8 @@ out/
 
 # Docs
 docs/
-lib/
+lib/forge-std
+lib/openzeppelin-contracts-upgradeable
 
 # Dotenv file
 .env
