@@ -43,8 +43,6 @@ if (ethereum != undefined) {
   console.log("res1", res1)
 }
 
-const clientPublic = createPublicClient({chain: localhost, transport: http()})
-
 const customChain = defineChain({
   id: 31337,
   name: 'localhost',
@@ -55,12 +53,15 @@ const customChain = defineChain({
   },
   rpcUrls: {
     default: {
-      http: ['http://localhost'],
+      http: ['http://localhost:8545'],
     },
   },
 })
 
+const clientPublic = createPublicClient({chain: customChain, transport: http()})
+
 const accountMe = privateKeyToAccount('0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80')
+
 const clientWallet = createWalletClient({
   account: accountMe,
   chain: customChain,
@@ -74,6 +75,7 @@ const clientTest = createTestClient({
 
 const USDE_CONT_ADDR = '0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0'
 const STAKER_ADDR = "0x70997970C51812dc3A010C7d01b50e0d17dc79C8"
+
 const contractUsde = getContract({
   address: USDE_CONT_ADDR,
   abi: usdeAbi,
@@ -94,7 +96,7 @@ const testme = async() => {
     console.log(mine)
 
     const result = await contractUsde.read.totalSupply()
-    console.log(result)
+    console.log('supply', result)
 
     try {
       await contractUsde.write.setMinter([address[0]])
@@ -110,7 +112,7 @@ const testme = async() => {
 
       //alternative implementation
       //const hash = await contractme.write.mint(["0x70997970C51812dc3A010C7d01b50e0d17dc79C8", 1])
-      console.log(hash)
+      console.log('hash', hash)
 
       const result = await contractUsde.read.totalSupply()
       console.log("total", result)
@@ -121,7 +123,7 @@ const testme = async() => {
       // set allowances of the owner spender
       const hash2 = await contractUsde.write.approve([
         address[0], 2])
-      console.log(hash2)
+      console.log('hash', hash2)
 
       // transfer from the account that is minted with erc20 token 
       // to another account
@@ -133,7 +135,7 @@ const testme = async() => {
       const logs = await clientPublic.getContractEvents({ 
         abi: usdeAbi 
       })
-      console.log(logs)
+      //console.log(logs)
       const logs2 = await clientPublic.getContractEvents({ 
         address: USDE_CONT_ADDR,
         abi: usdeAbi,
@@ -145,7 +147,7 @@ const testme = async() => {
         fromBlock: BigInt(0),
         toBlock: BigInt(163350)
       })
-      console.log(logs2)
+      //console.log(logs2)
 
       const hash4 = await clientWallet.deployContract({
         abi: stakingVaultAbi,
