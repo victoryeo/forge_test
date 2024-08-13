@@ -13,6 +13,8 @@ forge install openzeppelin-contracts-05=OpenZeppelin/openzeppelin-contracts@v2.5
 
 forge remove OpenZeppelin/openzeppelin-contracts  -f
 
+forge test --match-contract StakedUSDeTest
+
 cast call 0x5FbDB2315678afecb367f032d93F642f64180aa3 "mint(address, uint256)()" 0x70997970C51812dc3A010C7d01b50e0d17dc79C8 10 --rpc-url localhost:8545
 
 cast call 0x5FbDB2315678afecb367f032d93F642f64180aa3 "totalSupply()(uint256)" --rpc-url localhost:854
