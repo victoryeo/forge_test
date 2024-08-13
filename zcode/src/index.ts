@@ -3,11 +3,13 @@ import { localhost, mainnet, anvil } from "viem/chains";
 import { MetaMaskSDK, MetaMaskSDKOptions } from "@metamask/sdk"
 import { createTestClient, Address } from 'viem'
 import { foundry } from 'viem/chains'
-import { getContract, defineChain } from 'viem'
+import { getContract, defineChain, decodeErrorResult } from 'viem'
 import { usdeAbi } from "./usdeAbi";
 import { stakingVaultAbi, bytecode as stakingVaultBytecode } from "./stakingVault";
 import { privateKeyToAccount } from "viem/accounts";
 import { type GetBlockNumberErrorType } from 'viem'
+import { erc4626Abi } from "viem";
+import { myerc4626Abi } from "./erc4626";
 
 const options: MetaMaskSDKOptions = {
   shouldShimWeb3: false,
@@ -62,8 +64,16 @@ const clientPublic = createPublicClient({chain: customChain, transport: http()})
 
 const accountMe = privateKeyToAccount('0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80')
 
+const accountStaker = privateKeyToAccount
+('0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d')
+
 const clientWallet = createWalletClient({
   account: accountMe,
+  chain: customChain,
+  transport: http('http://localhost:8545')
+})
+const clientWalletStaker = createWalletClient({
+  account: accountStaker,
   chain: customChain,
   transport: http('http://localhost:8545')
 })
@@ -82,6 +92,13 @@ const contractUsde = getContract({
   // 1a. Insert a single client
   // 1b. Or public and/or wallet clients
   client: { public: clientPublic, wallet: clientWallet }
+})
+const contractUsdeStaker = getContract({
+  address: USDE_CONT_ADDR,
+  abi: usdeAbi,
+  // 1a. Insert a single client
+  // 1b. Or public and/or wallet clients
+  client: { public: clientPublic, wallet: clientWalletStaker }
 })
 
 const testme = async() => { 
@@ -131,7 +148,9 @@ const testme = async() => {
         address[0], 
         STAKER_ADDR, 1])
       console.log("hash", hash3)
-
+      const result22 = await contractUsde.read.balanceOf([STAKER_ADDR])
+      console.log("balance staker", result22)
+      
       const logs = await clientPublic.getContractEvents({ 
         abi: usdeAbi 
       })
@@ -161,7 +180,7 @@ const testme = async() => {
         { hash: hash4 }
       )
       // print contract address
-      console.log("address", transactionReceipt.contractAddress)
+      console.log("contractAddress", transactionReceipt.contractAddress)
       const stakingVaultAddress = transactionReceipt.contractAddress
 
       const contractStakingVault = getContract({
@@ -179,14 +198,48 @@ const testme = async() => {
       console.log("hash", hash5)
       const hash6 = await contractStakingVault.write.transferInRewards(["1"])
       console.log('hash', hash6)
-      /*const hash6 = await contractStakingVault.write.deposit([
-        "1", address[0]])
-      console.log(hash6)*/
+
+      const result3 = await contractUsdeStaker.read.totalSupply()
+      console.log('supply', result3)
+
+      const hash7 = await contractUsde.write.mint([STAKER_ADDR, 1])
+      console.log(hash7)
+      const result23 = await contractUsde.read.balanceOf([STAKER_ADDR])
+      console.log("balance staker", result23)
+      let logs3 = await clientPublic.getContractEvents({ 
+        abi: usdeAbi 
+      })
+      console.log(logs3)
+      //required for staking vault deposit to work
+      await contractUsde.write.approve([stakingVaultAddress, 1])
+      
+      //let hash11 = await contractStakingVault.write.approve([STAKER_ADDR, 1])
+      //hash11 = await contractStakingVault.write.approve([stakingVaultAddress, 1])
+      //hash11 = await contractStakingVault.write.approve([address[0], 1])
+
+      const theallowance = await contractUsde.read.allowance([address[0], stakingVaultAddress])
+      console.log(theallowance)
+      const hash9 = await contractStakingVault.write.deposit([
+        "1", STAKER_ADDR])
+      console.log(hash9)
+
+      const logs40 = await clientPublic.getContractEvents({ 
+        abi: stakingVaultAbi,
+        eventName: "EVCheckAllowance",
+      })
+      console.log("logs40", logs40)
+
     } catch (error: any) {
-      //const revertData = error;
+      console.warn("error")
       const e = error as GetBlockNumberErrorType
       console.log(e)
-      //console.log("Custom Error:", revertData);
+
+      /*const decodedError = decodeErrorResult({
+        abi: myerc4626Abi ,
+        data: "0x6e553f65000000000000000000000000000000000000000000000000000000000000000100000000000000000000000070997970c51812dc3a010c7d01b50e0d17dc79c8",
+      });
+      console.log(decodedError)*/
+      //console.log("Custom Error:", error);
     }
 }
 

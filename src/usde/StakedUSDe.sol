@@ -20,6 +20,7 @@ import "./interfaces/IStakedUSDe.sol";
  */
 contract StakedUSDe is SingleAdminAccessControl, ReentrancyGuard, ERC20Permit, ERC4626, IStakedUSDe {
   using SafeERC20 for IERC20;
+  event TESTEV(address, uint256);
 
   /* ------------- CONSTANTS ------------- */
   /// @notice The role that is allowed to distribute rewards to this contract
@@ -207,11 +208,11 @@ contract StakedUSDe is SingleAdminAccessControl, ReentrancyGuard, ERC20Permit, E
     notZero(assets)
     notZero(shares)
   {
-    if (hasRole(SOFT_RESTRICTED_STAKER_ROLE, caller) || hasRole(SOFT_RESTRICTED_STAKER_ROLE, receiver)) {
+    /*if (hasRole(SOFT_RESTRICTED_STAKER_ROLE, caller) || hasRole(SOFT_RESTRICTED_STAKER_ROLE, receiver)) {
       revert OperationNotAllowed();
-    }
+    }*/
     super._deposit(caller, receiver, assets, shares);
-    _checkMinShares();
+    //_checkMinShares();
   }
 
   /**
@@ -243,12 +244,12 @@ contract StakedUSDe is SingleAdminAccessControl, ReentrancyGuard, ERC20Permit, E
    */
 
   function _beforeTokenTransfer(address from, address to, uint256) internal virtual override {
-    if (hasRole(FULL_RESTRICTED_STAKER_ROLE, from) && to != address(0)) {
-      revert OperationNotAllowed();
-    }
-    if (hasRole(FULL_RESTRICTED_STAKER_ROLE, to)) {
-      revert OperationNotAllowed();
-    }
+    //if (hasRole(FULL_RESTRICTED_STAKER_ROLE, from) && to != address(0)) {
+    //  revert OperationNotAllowed();
+    //}
+    //if (hasRole(FULL_RESTRICTED_STAKER_ROLE, to)) {
+    //  revert OperationNotAllowed();
+    //}
   }
 
   /**
@@ -256,5 +257,12 @@ contract StakedUSDe is SingleAdminAccessControl, ReentrancyGuard, ERC20Permit, E
    */
   function renounceRole(bytes32, address) public virtual override {
     revert OperationNotAllowed();
+  }
+
+  function deposit(uint256 assets, address receiver) public virtual override returns (uint256) {
+      emit TESTEV(receiver, assets);
+      uint256 shares = 1;
+      super.deposit(assets, receiver);
+      return shares;
   }
 }
