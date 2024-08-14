@@ -218,7 +218,8 @@ const testme = async() => {
       //hash11 = await contractStakingVault.write.approve([address[0], 1])
 
       const theallowance = await contractUsde.read.allowance([address[0], stakingVaultAddress])
-      console.log(theallowance)
+      console.log('allowance' ,theallowance)
+      // deposit assets
       const hash9 = await contractStakingVault.write.deposit([
         "1", STAKER_ADDR])
       console.log(hash9)
@@ -229,10 +230,29 @@ const testme = async() => {
       console.log("contract balance", bal2)
       const logs40 = await clientPublic.getContractEvents({ 
         abi: stakingVaultAbi,
-        eventName: "EVCheckAllowance",
+        eventName: "EVTESTME",
       })
       console.log("logs40", logs40)
 
+      await contractUsde.write.approve([stakingVaultAddress, 100])
+      const theallowance2 = await contractUsde.read.allowance([address[0], stakingVaultAddress])
+      console.log('allowance' ,theallowance2)
+
+      const bal3 = await contractStakingVault.read.totalSupply()
+      console.log("contract supply", bal3)
+      console.log(await contractStakingVault.read.totalAssets())
+
+      // mint shares
+      const hash11 = await contractStakingVault.write.mint([
+        "1", STAKER_ADDR])
+      console.log(hash11)
+      const logs41 = await clientPublic.getContractEvents({ 
+        abi: stakingVaultAbi,
+        eventName: "EVTESTME",
+        //fromBlock: BigInt(0),
+        //toBlock: BigInt(163350)
+      })
+      console.log("logs41", logs41)
     } catch (error: any) {
       console.warn("error")
       const e = error as GetBlockNumberErrorType
