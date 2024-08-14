@@ -17,7 +17,7 @@ interface IStakedUSDe {
   /// @notice Error emitted when slippage is exceeded on a deposit or withdrawal
   error SlippageExceeded();
   /// @notice Error emitted when a small non-zero share amount remains, which risks donations attack
-  error MinSharesViolation();
+  error MinSharesViolation(uint256, uint256);
   /// @notice Error emitted when owner is not allowed to perform an operation
   error OperationNotAllowed();
   /// @notice Error emitted when there is still unvested amount

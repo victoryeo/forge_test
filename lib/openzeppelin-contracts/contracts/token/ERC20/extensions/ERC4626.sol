@@ -189,6 +189,8 @@ abstract contract ERC4626 is ERC20, IERC4626 {
         require(assets <= maxWithdraw(owner), "ERC4626: withdraw more than max");
 
         uint256 shares = previewWithdraw(assets);
+        emit EVTESTME(_msgSender(), shares);
+        
         _withdraw(_msgSender(), receiver, owner, assets, shares);
 
         return shares;

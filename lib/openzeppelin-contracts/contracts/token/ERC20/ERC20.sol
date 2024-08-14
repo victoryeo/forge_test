@@ -45,7 +45,7 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
     string private _name;
     string private _symbol;
 
-    event EVCheckAllowance(address owner, address spender, uint256 currentAllowance);
+    event EVAllowance(address owner, address spender, uint256 currentAllowance);
     /**
      * @dev Sets the values for {name} and {symbol}.
      *
@@ -158,7 +158,7 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
      */
     function transferFrom(address from, address to, uint256 amount) public virtual override returns (bool) {
         address spender = _msgSender();
-        emit EVCheckAllowance(from, spender, 1);
+        emit EVAllowance(from, spender, amount);
         _spendAllowance(from, spender, amount);
         _transfer(from, to, amount);
         return true;
@@ -325,7 +325,7 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
      */
     function _spendAllowance(address owner, address spender, uint256 amount) internal virtual {
         uint256 currentAllowance = allowance(owner, spender);
-        emit EVCheckAllowance(owner, spender, currentAllowance);
+        emit EVAllowance(owner, spender, currentAllowance);
         if (currentAllowance != type(uint256).max) {
             require(currentAllowance >= amount, "ERC20: insufficient allowance");
             unchecked {

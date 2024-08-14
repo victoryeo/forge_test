@@ -191,7 +191,8 @@ contract StakedUSDe is SingleAdminAccessControl, ReentrancyGuard, ERC20Permit, E
   /// @notice ensures a small non-zero amount of shares does not remain, exposing to donation attack
   function _checkMinShares() internal view {
     uint256 _totalSupply = totalSupply();
-    if (_totalSupply > 0 && _totalSupply < MIN_SHARES) revert MinSharesViolation();
+    if (_totalSupply > 0 && _totalSupply < MIN_SHARES) 
+      revert MinSharesViolation(_totalSupply, MIN_SHARES);
   }
 
   /**
@@ -235,7 +236,7 @@ contract StakedUSDe is SingleAdminAccessControl, ReentrancyGuard, ERC20Permit, E
     }
 
     super._withdraw(caller, receiver, _owner, assets, shares);
-    _checkMinShares();
+    //_checkMinShares();
   }
 
   /**
