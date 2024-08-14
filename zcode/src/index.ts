@@ -223,6 +223,10 @@ const testme = async() => {
         "1", STAKER_ADDR])
       console.log(hash9)
 
+      const bal1 = await contractStakingVault.read.totalSupply()
+      console.log("contract supply", bal1)
+      const bal2 = await contractStakingVault.read.totalAssets()
+      console.log("contract balance", bal2)
       const logs40 = await clientPublic.getContractEvents({ 
         abi: stakingVaultAbi,
         eventName: "EVCheckAllowance",
