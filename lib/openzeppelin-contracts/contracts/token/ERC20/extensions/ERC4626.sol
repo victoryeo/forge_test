@@ -55,7 +55,7 @@ abstract contract ERC4626 is ERC20, IERC4626 {
     IERC20 private immutable _asset;
     uint8 private immutable _underlyingDecimals;
     error TESTME(address, uint256);
-    event EVTESTME(address, uint256);
+    event EVTESTME(address sender, uint256 value);
     /**
      * @dev Set the underlying asset contract. This must be an ERC20-compatible contract (ERC20 or ERC777).
      */
@@ -177,6 +177,8 @@ abstract contract ERC4626 is ERC20, IERC4626 {
         require(shares <= maxMint(receiver), "ERC4626: mint more than max");
 
         uint256 assets = previewMint(shares);
+        emit EVTESTME(_msgSender(), assets);
+        //assets = 1;
         _deposit(_msgSender(), receiver, assets, shares);
 
         return assets;
@@ -230,7 +232,7 @@ abstract contract ERC4626 is ERC20, IERC4626 {
 
         SafeERC20.safeTransferFrom(_asset, caller, address(this), assets);
         
-        //_mint(receiver, shares);
+        _mint(receiver, shares);
 
         emit Deposit(caller, receiver, assets, shares);
     }
