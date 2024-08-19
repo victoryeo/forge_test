@@ -271,12 +271,12 @@ const testme = async() => {
       })
       console.log("logs41", logs41)
       
-      console.log(await contractStakingVault.read.balanceOf([STAKER_ADDR]))
+      console.log("staker balancer ", await contractStakingVault.read.balanceOf([STAKER_ADDR]))
       console.log(await contractStakingVault.read.balanceOf([address[0]]))
 
       await contractStakingVault.write.approve([address[0], 100])
 
-      // withdraw asset tokens from vault and to staker and burns shares from staker in vault
+      // withdraw asset tokens from vault to staker and burns shares from staker in vault
       const bal4 = await contractStakingVault.read.totalSupply()
       console.log("contract total supply", bal4)
       const res = await clientPublic.simulateContract({
@@ -288,6 +288,19 @@ const testme = async() => {
       })
       console.log(res) 
       const hash25 = await clientWalletStaker.writeContract(res.request)
+
+      // redeem shares from vault and send used tokens from vault to receiver
+      const bal5 = await contractStakingVault.read.totalSupply()
+      console.log("contract total supply", bal5)
+      const res1 = await clientPublic.simulateContract({
+        account: STAKER_ADDR as Address,
+        address: stakingVaultAddress as Address,
+        abi: stakingVaultAbi,
+        functionName: 'redeem',
+        args: [1, address[0], STAKER_ADDR],
+      })
+      console.log(res1) 
+      const hash26 = await clientWalletStaker.writeContract(res1.request)
 
     } catch (error: any) {
       console.warn("errornow")
