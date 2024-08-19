@@ -67,6 +67,12 @@ const accountMe = privateKeyToAccount('0xac0974bec39a17e36ba4a6b4d238ff944bacb47
 const accountStaker = privateKeyToAccount
 ('0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d')
 
+// staker account adress
+const STAKER_ADDR = "0x70997970C51812dc3A010C7d01b50e0d17dc79C8"
+
+// deployed USDE contract address
+const USDE_CONT_ADDR = '0x5FbDB2315678afecb367f032d93F642f64180aa3'
+
 const clientWallet = createWalletClient({
   account: accountMe,
   chain: customChain,
@@ -82,11 +88,6 @@ const clientTest = createTestClient({
   mode: 'anvil',
   transport: http(), 
 })
-
-// deployed USDE contract address
-const USDE_CONT_ADDR = '0x5FbDB2315678afecb367f032d93F642f64180aa3'
-// staker account adress
-const STAKER_ADDR = "0x70997970C51812dc3A010C7d01b50e0d17dc79C8"
 
 const contractUsde = getContract({
   address: USDE_CONT_ADDR,
