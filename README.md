@@ -3,7 +3,7 @@
 **Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
 
 
-forge create --rpc-url localhost:8545 --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 ./contracts/USDe.sol:USDe --constructor-args 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266
+forge create --rpc-url localhost:8545 --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 ./src/usde/USDe.sol:USDe --constructor-args 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266
 
 forge install OpenZeppelin/openzeppelin-contracts --no-commit
 
