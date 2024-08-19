@@ -83,7 +83,9 @@ const clientTest = createTestClient({
   transport: http(), 
 })
 
+// deployed USDE contract address
 const USDE_CONT_ADDR = '0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0'
+// staker account adress
 const STAKER_ADDR = "0x70997970C51812dc3A010C7d01b50e0d17dc79C8"
 
 const contractUsde = getContract({
@@ -116,8 +118,10 @@ const testme = async() => {
     console.log('supply', result)
 
     try {
+      // set usde minter
       await contractUsde.write.setMinter([address[0]])
 
+      // mint usde
       const { request } = await clientPublic.simulateContract({
         account: address[0] as Address,
         address: USDE_CONT_ADDR,
@@ -128,7 +132,7 @@ const testme = async() => {
       const hash = await clientWallet.writeContract(request)
 
       //alternative implementation
-      //const hash = await contractme.write.mint(["0x70997970C51812dc3A010C7d01b50e0d17dc79C8", 1])
+      //const hash = await contractme.write.mint([STAKER_ADDR, 1])
       console.log('hash', hash)
 
       const result = await contractUsde.read.totalSupply()
@@ -151,6 +155,7 @@ const testme = async() => {
       const result22 = await contractUsde.read.balanceOf([STAKER_ADDR])
       console.log("staker balance", result22)
       
+      // get usde contract events
       const logs = await clientPublic.getContractEvents({ 
         abi: usdeAbi 
       })
@@ -179,7 +184,7 @@ const testme = async() => {
       const transactionReceipt = await clientPublic.waitForTransactionReceipt( 
         { hash: hash4 }
       )
-      // print contract address
+      // print staked usde contract address
       console.log("contractAddress", transactionReceipt.contractAddress)
       const stakingVaultAddress = transactionReceipt.contractAddress
 
@@ -190,7 +195,7 @@ const testme = async() => {
         // 1b. Or public and/or wallet clients
         client: { public: clientPublic, wallet: clientWallet }
       })
-      // set minter
+      // set usde minter
       await contractUsde.write.setMinter([address[0]])
 
       // set allowances of the staker spender
@@ -202,6 +207,7 @@ const testme = async() => {
       const result3 = await contractUsdeStaker.read.totalSupply()
       console.log('supply', result3)
 
+      // mint usde tokens
       const hash7 = await contractUsde.write.mint([STAKER_ADDR, 2])
       console.log(hash7)
       const result23 = await contractUsde.read.balanceOf([STAKER_ADDR])
@@ -219,9 +225,10 @@ const testme = async() => {
 
       const theallowance = await contractUsde.read.allowance([address[0], stakingVaultAddress])
       console.log('allowance' ,theallowance)
-      // deposit assets
+
       console.log(await contractStakingVault.read.balanceOf([STAKER_ADDR]))
       console.log(await contractStakingVault.read.balanceOf([address[0]]))
+      // deposit assets to vault and receive ownership of shares to staker
       const hash9 = await contractStakingVault.write.deposit([
         "1", STAKER_ADDR])
       console.log(hash9)
@@ -249,7 +256,7 @@ const testme = async() => {
       console.log("balance ", await contractStakingVault.read.balanceOf([address[0]]))
       console.log("balance ", await contractUsde.read.balanceOf([address[0]]))
 
-      // mint shares
+      // mint exactly shares of vault to staker
       const hash11 = await contractStakingVault.write.mint([
         "1", STAKER_ADDR])
       console.log('hash11', hash11)
@@ -268,7 +275,7 @@ const testme = async() => {
 
       await contractStakingVault.write.approve([address[0], 100])
 
-      // withdraw
+      // withdraw asset tokens from vault and to staker and burns shares from staker in vault
       const bal4 = await contractStakingVault.read.totalSupply()
       console.log("contract total supply", bal4)
       const res = await clientPublic.simulateContract({
@@ -276,7 +283,7 @@ const testme = async() => {
         address: stakingVaultAddress as Address,
         abi: stakingVaultAbi,
         functionName: 'withdraw',
-        args: [1, STAKER_ADDR, STAKER_ADDR],
+        args: [1, address[0], STAKER_ADDR],
       })
       console.log(res) 
       const hash25 = await clientWalletStaker.writeContract(res.request)
